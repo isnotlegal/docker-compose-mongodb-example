@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  fastapi:
+    build: ./fastapi
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 800M
+
+  streamlit:
+    build: ./streamlit
+    ports:
+      - "8501:8501"
+    networks:
+      - app-network
+    depends_on:
+      - fastapi
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 800M
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 800M
+
+volumes:
+  mongo_data:
+
+networks:
+  app-network:
+    driver: bridge
